@@ -4,6 +4,324 @@
  * view toggling, modals, context menus, and micro-interactions.
  */
 
+/**
+ * Virtual File System (VFS)
+ * Provides client-side fallback storage when running on static hosts
+ * such as GitHub Pages or offline without the Spring Boot backend.
+ */
+class VirtualFileSystem {
+    constructor() {
+        this.storageKey = "java_file_explorer_vfs_v1";
+        this.root = this.loadStorage();
+    }
+
+    loadStorage() {
+        try {
+            const raw = localStorage.getItem(this.storageKey);
+            if (raw) return JSON.parse(raw);
+        } catch (e) {
+            console.error("VFS load error:", e);
+        }
+        return this.getDefaultTree();
+    }
+
+    saveStorage() {
+        try {
+            localStorage.setItem(this.storageKey, JSON.stringify(this.root));
+        } catch (e) {
+            console.error("VFS save error:", e);
+        }
+    }
+
+    getDefaultTree() {
+        return {
+            "Documents": {
+                name: "Documents",
+                path: "Documents",
+                isDir: true,
+                modified: "2026-10-22T22:20:00.000Z",
+                children: {
+                    "Meeting_Notes.txt": {
+                        name: "Meeting_Notes.txt",
+                        path: "Documents/Meeting_Notes.txt",
+                        isDir: false,
+                        content: "Sprint Planning Meeting Notes\nDate: 2026-10-22\n\n1. Review Java OOP design principles:\n   - FileDocument extends FileItem (Inheritance)\n   - FileOperations interface defines contract (Abstraction)\n   - Secure boundary checks (Encapsulation)\n   - Polymorphic icon and preview rendering (Polymorphism)\n2. Action items:\n   - Finalize REST API endpoints\n   - Polish frontend file manager UI\n   - Write comprehensive unit tests",
+                        modified: "2026-10-22T22:09:00.000Z"
+                    },
+                    "Project_Proposal.txt": {
+                        name: "Project_Proposal.txt",
+                        path: "Documents/Project_Proposal.txt",
+                        isDir: false,
+                        content: "Project Proposal: Interactive Java File Explorer Web Application\n\nObjective:\nBuild an enterprise-grade file management platform demonstrating core OOP concepts:\n- Encapsulation: Strict path resolution preventing directory traversal attacks\n- Inheritance: Base FileItem class with specialized FolderItem and FileDocument subclasses\n- Polymorphism: Abstract methods for size calculation, formatting, and previewing\n- Abstraction: FileOperations interface decouples API layer from filesystem operations",
+                        modified: "2026-10-22T22:09:00.000Z"
+                    },
+                    "java.txt": {
+                        name: "java.txt",
+                        path: "Documents/java.txt",
+                        isDir: false,
+                        content: "Java 17 & Spring Boot 3\nModern Java file explorer system",
+                        modified: "2026-10-22T22:20:00.000Z"
+                    }
+                }
+            },
+            "Downloads": {
+                name: "Downloads",
+                path: "Downloads",
+                isDir: true,
+                modified: "2026-10-22T22:09:00.000Z",
+                children: {
+                    "Release_Notes_v1.0.txt": {
+                        name: "Release_Notes_v1.0.txt",
+                        path: "Downloads/Release_Notes_v1.0.txt",
+                        isDir: false,
+                        content: "Release Notes - v1.0.0\n\nFeatures:\n- Dual Grid & List views with responsive card layouts\n- Real-time directory navigation with interactive breadcrumbs\n- File operations: Create, Read, Update, Delete, Rename\n- In-browser text file editor with live preview\n- Dark and Light theme toggle with local storage persistence\n- Deep Java OOP principles educational inspector modal",
+                        modified: "2026-10-22T22:09:00.000Z"
+                    },
+                    "Sample_Config.json": {
+                        name: "Sample_Config.json",
+                        path: "Downloads/Sample_Config.json",
+                        isDir: false,
+                        content: "{\n  \"appName\": \"Java File Explorer\",\n  \"version\": \"1.0.0\",\n  \"theme\": \"dark\",\n  \"enablePreviews\": true,\n  \"rootDirectory\": \"workspace\"\n}",
+                        modified: "2026-10-22T22:09:00.000Z"
+                    }
+                }
+            },
+            "Notes": {
+                name: "Notes",
+                path: "Notes",
+                isDir: true,
+                modified: "2026-10-22T22:09:00.000Z",
+                children: {
+                    "OOP_Concepts_Summary.txt": {
+                        name: "OOP_Concepts_Summary.txt",
+                        path: "Notes/OOP_Concepts_Summary.txt",
+                        isDir: false,
+                        content: "=========================================================\n JAVA OBJECT ORIENTED PROGRAMMING ARCHITECTURE SUMMARY\n=========================================================\n\n1. ENCAPSULATION\n   - Private fields with validated getters and setters.\n   - Secure path sandbox resolution (WorkspaceConfig.resolveSecurePath) prevents path traversal (e.g. '../').\n\n2. INHERITANCE\n   - Abstract base class: FileItem\n   - Subclasses: FolderItem, FileDocument\n   - Common attributes (name, path, size, modified timestamp, permissions) shared.\n\n3. POLYMORPHISM\n   - Abstract methods getDisplayType(), isDirectory(), getIconType().\n   - Each subclass customizes behavior dynamically at runtime.\n\n4. ABSTRACTION\n   - FileOperations interface defines filesystem contracts.\n   - FileExplorerService implements the interface with Java NIO (Path, Files, DirectoryStream).\n   - Controller interacts purely with interface abstractions.",
+                        modified: "2026-10-22T22:09:00.000Z"
+                    }
+                }
+            },
+            "SourceCode": {
+                name: "SourceCode",
+                path: "SourceCode",
+                isDir: true,
+                modified: "2026-10-22T22:09:00.000Z",
+                children: {
+                    "HelloJava.java": {
+                        name: "HelloJava.java",
+                        path: "SourceCode/HelloJava.java",
+                        isDir: false,
+                        content: "public class HelloJava {\n    public static void main(String[] args) {\n        System.out.println(\"Welcome to Java OOP File Explorer!\");\n    }\n}",
+                        modified: "2026-10-22T22:09:00.000Z"
+                    },
+                    "Script.js": {
+                        name: "Script.js",
+                        path: "SourceCode/Script.js",
+                        isDir: false,
+                        content: "console.log('Java File Explorer - Interactive Client Initialized.');",
+                        modified: "2026-10-22T22:09:00.000Z"
+                    }
+                }
+            }
+        };
+    }
+
+    getNode(path) {
+        if (!path || path.trim() === "") return { isDir: true, children: this.root };
+        const parts = path.split("/").filter(Boolean);
+        let curr = { isDir: true, children: this.root };
+        for (const p of parts) {
+            if (!curr.children || !curr.children[p]) return null;
+            curr = curr.children[p];
+        }
+        return curr;
+    }
+
+    toItemDTO(node, name, fullPath) {
+        if (node.isDir) {
+            return {
+                name: name,
+                path: fullPath,
+                itemType: "Folder",
+                type: "Folder",
+                size: 0,
+                displaySize: "--",
+                lastModified: node.modified || new Date().toISOString(),
+                readable: true,
+                writable: true,
+                itemCount: Object.keys(node.children || {}).length,
+                oopClass: "FolderItem (subclass of FileItem)"
+            };
+        } else {
+            const ext = name.includes(".") ? name.split(".").pop().toLowerCase() : "";
+            const content = node.content || "";
+            const size = new Blob([content]).size;
+            let typeDesc = "File";
+            if (ext === "txt") typeDesc = "Text Document";
+            else if (ext === "java") typeDesc = "Java Source Code";
+            else if (ext === "js") typeDesc = "JavaScript File";
+            else if (ext === "json") typeDesc = "JSON File";
+            return {
+                name: name,
+                path: fullPath,
+                itemType: "File",
+                type: typeDesc,
+                extension: ext,
+                size: size,
+                displaySize: size < 1024 ? `${size} B` : `${(size / 1024).toFixed(1)} KB`,
+                lastModified: node.modified || new Date().toISOString(),
+                readable: true,
+                writable: true,
+                lineCount: content.split("\n").length,
+                oopClass: "FileDocument (subclass of FileItem)"
+            };
+        }
+    }
+
+    listFiles(path) {
+        const node = this.getNode(path);
+        if (!node || !node.isDir) {
+            return { success: false, message: `Path not found or not a directory: ${path}` };
+        }
+        const result = [];
+        const base = path ? path.replace(/\/$/, "") + "/" : "";
+        for (const [name, child] of Object.entries(node.children || {})) {
+            result.push(this.toItemDTO(child, name, base + name));
+        }
+        return { success: true, data: result };
+    }
+
+    search(query, searchPath) {
+        const q = (query || "").toLowerCase();
+        const results = [];
+        const traverse = (node, currentPath) => {
+            if (!node || !node.children) return;
+            for (const [name, child] of Object.entries(node.children)) {
+                const full = currentPath ? `${currentPath}/${name}` : name;
+                if (name.toLowerCase().includes(q)) {
+                    results.push(this.toItemDTO(child, name, full));
+                }
+                if (child.isDir) {
+                    traverse(child, full);
+                }
+            }
+        };
+        const startNode = this.getNode(searchPath);
+        if (startNode && startNode.isDir) {
+            traverse(startNode, searchPath || "");
+        }
+        return { success: true, data: results };
+    }
+
+    createFolder(parentPath, folderName) {
+        const parent = this.getNode(parentPath);
+        if (!parent || !parent.isDir) return { success: false, message: "Parent directory does not exist" };
+        if (parent.children && parent.children[folderName]) return { success: false, message: "Item already exists" };
+        const fullPath = parentPath ? `${parentPath}/${folderName}` : folderName;
+        parent.children = parent.children || {};
+        parent.children[folderName] = {
+            name: folderName,
+            path: fullPath,
+            isDir: true,
+            modified: new Date().toISOString(),
+            children: {}
+        };
+        this.saveStorage();
+        return { success: true, data: this.toItemDTO(parent.children[folderName], folderName, fullPath) };
+    }
+
+    createFile(parentPath, fileName, content) {
+        const parent = this.getNode(parentPath);
+        if (!parent || !parent.isDir) return { success: false, message: "Parent directory does not exist" };
+        if (parent.children && parent.children[fileName]) return { success: false, message: "File already exists" };
+        const fullPath = parentPath ? `${parentPath}/${fileName}` : fileName;
+        parent.children = parent.children || {};
+        parent.children[fileName] = {
+            name: fileName,
+            path: fullPath,
+            isDir: false,
+            content: content || "",
+            modified: new Date().toISOString()
+        };
+        this.saveStorage();
+        return { success: true, data: this.toItemDTO(parent.children[fileName], fileName, fullPath) };
+    }
+
+    renameItem(path, newName) {
+        if (!path) return { success: false, message: "Invalid path" };
+        const parts = path.split("/").filter(Boolean);
+        const oldName = parts.pop();
+        const parentPath = parts.join("/");
+        const parent = this.getNode(parentPath);
+        if (!parent || !parent.children || !parent.children[oldName]) {
+            return { success: false, message: "Item to rename not found" };
+        }
+        if (parent.children[newName]) {
+            return { success: false, message: "An item with the new name already exists" };
+        }
+        const item = parent.children[oldName];
+        delete parent.children[oldName];
+        item.name = newName;
+        const newPath = parentPath ? `${parentPath}/${newName}` : newName;
+        item.path = newPath;
+        item.modified = new Date().toISOString();
+        parent.children[newName] = item;
+
+        const updateChildPaths = (dirNode, currentPrefix) => {
+            if (!dirNode.children) return;
+            for (const [k, child] of Object.entries(dirNode.children)) {
+                child.path = `${currentPrefix}/${child.name}`;
+                if (child.isDir) updateChildPaths(child, child.path);
+            }
+        };
+        if (item.isDir) updateChildPaths(item, newPath);
+
+        this.saveStorage();
+        return { success: true, data: this.toItemDTO(item, newName, newPath) };
+    }
+
+    deleteItem(path) {
+        if (!path) return { success: false, message: "Invalid path" };
+        const parts = path.split("/").filter(Boolean);
+        const targetName = parts.pop();
+        const parentPath = parts.join("/");
+        const parent = this.getNode(parentPath);
+        if (!parent || !parent.children || !parent.children[targetName]) {
+            return { success: false, message: "Item not found" };
+        }
+        delete parent.children[targetName];
+        this.saveStorage();
+        return { success: true, message: "Item deleted successfully" };
+    }
+
+    previewFile(path) {
+        const node = this.getNode(path);
+        if (!node || node.isDir) return { success: false, message: "File not found or is a directory" };
+        const content = node.content || "";
+        const size = new Blob([content]).size;
+        return {
+            success: true,
+            data: {
+                name: node.name,
+                path: node.path,
+                content: content,
+                lineCount: content.split("\n").length,
+                formattedSize: size < 1024 ? `${size} B` : `${(size / 1024).toFixed(1)} KB`,
+                lastModified: node.modified || new Date().toISOString()
+            }
+        };
+    }
+
+    updateContent(path, content) {
+        const node = this.getNode(path);
+        if (!node || node.isDir) return { success: false, message: "File not found" };
+        node.content = content;
+        node.modified = new Date().toISOString();
+        this.saveStorage();
+        return this.previewFile(path);
+    }
+}
+
 class FileExplorerApp {
     constructor() {
         this.currentPath = "";
@@ -17,6 +335,9 @@ class FileExplorerApp {
         this.sortAsc = true;
         this.searchQuery = "";
         this.searchDebounceTimer = null;
+
+        this.vfs = new VirtualFileSystem();
+        this.useVFS = window.location.hostname.endsWith("github.io") || window.location.protocol === "file:";
 
         this.initDOMElements();
         this.initEventListeners();
@@ -286,11 +607,74 @@ class FileExplorerApp {
     // =========================================================================
     // API & Navigation
     // =========================================================================
+    async apiFetch(url, options = {}) {
+        const isPages = window.location.hostname.endsWith("github.io") || window.location.protocol === "file:";
+        if (this.useVFS || isPages) {
+            return this.executeVFS(url, options);
+        }
+
+        try {
+            const res = await fetch(url, options);
+            if (!res.ok && (res.status === 404 || res.status === 502)) {
+                this.enableVFSMode();
+                return this.executeVFS(url, options);
+            }
+            return await res.json();
+        } catch (err) {
+            console.warn("Backend API unavailable, activating client-side Virtual File System demo:", err);
+            this.enableVFSMode();
+            return this.executeVFS(url, options);
+        }
+    }
+
+    enableVFSMode() {
+        if (this.useVFS) return;
+        this.useVFS = true;
+        this.showToast("⚡ Interactive Demo Mode active (client-side workspace)", "info");
+    }
+
+    executeVFS(url, options = {}) {
+        const parsedUrl = new URL(url, window.location.origin || "http://localhost");
+        const pathname = parsedUrl.pathname;
+        const searchParams = parsedUrl.searchParams;
+        const method = (options.method || "GET").toUpperCase();
+
+        if (pathname === "/api/files" || pathname.endsWith("/api/files")) {
+            if (method === "GET") {
+                const path = searchParams.get("path") || "";
+                return this.vfs.listFiles(path);
+            } else if (method === "DELETE") {
+                const path = searchParams.get("path") || "";
+                return this.vfs.deleteItem(path);
+            }
+        } else if (pathname === "/api/files/search" || pathname.endsWith("/api/files/search")) {
+            const query = searchParams.get("name") || "";
+            const path = searchParams.get("path") || "";
+            return this.vfs.search(query, path);
+        } else if (pathname === "/api/files/folder" || pathname.endsWith("/api/files/folder")) {
+            const body = JSON.parse(options.body || "{}");
+            return this.vfs.createFolder(body.parentPath || "", body.folderName || "");
+        } else if (pathname === "/api/files/text" || pathname.endsWith("/api/files/text")) {
+            const body = JSON.parse(options.body || "{}");
+            return this.vfs.createFile(body.parentPath || "", body.fileName || "", body.content || "");
+        } else if (pathname === "/api/files/rename" || pathname.endsWith("/api/files/rename")) {
+            const body = JSON.parse(options.body || "{}");
+            return this.vfs.renameItem(body.path || "", body.newName || "");
+        } else if (pathname === "/api/files/preview" || pathname.endsWith("/api/files/preview")) {
+            const path = searchParams.get("path") || "";
+            return this.vfs.previewFile(path);
+        } else if (pathname === "/api/files/content" || pathname.endsWith("/api/files/content")) {
+            const body = JSON.parse(options.body || "{}");
+            return this.vfs.updateContent(body.path || "", body.content || "");
+        }
+
+        return { success: false, message: "Unhandled VFS route" };
+    }
+
     async loadCurrentDirectory() {
         this.statusSelection.textContent = "Loading directory...";
         try {
-            const res = await fetch(`/api/files?path=${encodeURIComponent(this.currentPath)}`);
-            const json = await res.json();
+            const json = await this.apiFetch(`/api/files?path=${encodeURIComponent(this.currentPath)}`);
 
             if (!json.success) {
                 this.showToast(json.message || "Failed to load directory", "error");
@@ -313,8 +697,7 @@ class FileExplorerApp {
     async performSearch(query) {
         this.statusSelection.textContent = `Searching for "${query}"...`;
         try {
-            const res = await fetch(`/api/files/search?name=${encodeURIComponent(query)}&path=${encodeURIComponent(this.currentPath)}`);
-            const json = await res.json();
+            const json = await this.apiFetch(`/api/files/search?name=${encodeURIComponent(query)}&path=${encodeURIComponent(this.currentPath)}`);
 
             if (json.success) {
                 this.items = json.data || [];
@@ -685,7 +1068,7 @@ class FileExplorerApp {
         if (!folderName) return;
 
         try {
-            const res = await fetch("/api/files/folder", {
+            const json = await this.apiFetch("/api/files/folder", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -693,7 +1076,6 @@ class FileExplorerApp {
                     folderName: folderName
                 })
             });
-            const json = await res.json();
 
             if (json.success) {
                 this.closeModal("new-folder-modal");
@@ -721,7 +1103,7 @@ class FileExplorerApp {
         if (!fileName) return;
 
         try {
-            const res = await fetch("/api/files/text", {
+            const json = await this.apiFetch("/api/files/text", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -730,7 +1112,6 @@ class FileExplorerApp {
                     content: content
                 })
             });
-            const json = await res.json();
 
             if (json.success) {
                 this.closeModal("new-file-modal");
@@ -761,7 +1142,7 @@ class FileExplorerApp {
         if (!newName) return;
 
         try {
-            const res = await fetch("/api/files/rename", {
+            const json = await this.apiFetch("/api/files/rename", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -769,7 +1150,6 @@ class FileExplorerApp {
                     newName: newName
                 })
             });
-            const json = await res.json();
 
             if (json.success) {
                 this.closeModal("rename-modal");
@@ -794,10 +1174,9 @@ class FileExplorerApp {
         const item = this.selectedItem;
 
         try {
-            const res = await fetch(`/api/files?path=${encodeURIComponent(item.path)}`, {
+            const json = await this.apiFetch(`/api/files?path=${encodeURIComponent(item.path)}`, {
                 method: "DELETE"
             });
-            const json = await res.json();
 
             if (json.success) {
                 this.closeModal("delete-modal");
@@ -818,8 +1197,7 @@ class FileExplorerApp {
     // =========================================================================
     async openFilePreview(item) {
         try {
-            const res = await fetch(`/api/files/preview?path=${encodeURIComponent(item.path)}`);
-            const json = await res.json();
+            const json = await this.apiFetch(`/api/files/preview?path=${encodeURIComponent(item.path)}`);
 
             if (!json.success) {
                 this.showToast(json.message, "error");
@@ -869,7 +1247,7 @@ class FileExplorerApp {
         const newContent = this.previewContentEditor.value;
 
         try {
-            const res = await fetch("/api/files/content", {
+            const json = await this.apiFetch("/api/files/content", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -877,7 +1255,6 @@ class FileExplorerApp {
                     content: newContent
                 })
             });
-            const json = await res.json();
 
             if (json.success) {
                 const preview = json.data;
