@@ -261,3 +261,14 @@ Once the terminal displays `Tomcat started on port 8080`, open your web browser 
 ```
 http://localhost:8080/
 ```
+
+---
+
+## 8. Live Demo & CI/CD Deployment
+
+- **GitHub Repository**: [https://github.com/ithimath/file_explorer.git](https://github.com/ithimath/file_explorer.git)
+- **GitHub Pages Live Demo**: [https://ithimath.github.io/file_explorer/](https://ithimath.github.io/file_explorer/)
+- **Automated CI/CD**:
+  - `ci.yml`: Builds and packages the Spring Boot JAR with JDK 17 and Maven, running all unit tests.
+  - `deploy.yml`: Deploys the interactive web application to GitHub Pages.
+
