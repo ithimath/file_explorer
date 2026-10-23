@@ -1,0 +1,6 @@
+Sprint Planning & OOP Design Meeting
+------------------------------------
+1. Discussed FileItem base class encapsulation.
+2. Verified FileDocument and FolderItem polymorphic getItemType() calls.
+3. Validated Path Traversal security using Java NIO Path.normalize().
+4. Finished frontend glassmorphism layout and icons.

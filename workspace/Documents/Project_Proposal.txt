@@ -1,0 +1,10 @@
+File Explorer Application
+=========================
+Author: College Mini-Project Team
+Tech Stack: Java 17, Spring Boot, Java NIO, HTML5, CSS3, JavaScript
+
+Features:
+1. Real-time file & folder browsing
+2. Full CRUD operations (create, rename, delete, preview)
+3. Demonstration of Core OOP: Encapsulation, Inheritance, Polymorphism, Abstraction
+4. Windows File Explorer-inspired Modern UI with Dark/Light mode

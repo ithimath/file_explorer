@@ -1,0 +1,7 @@
+File Explorer v1.0.0 Release Notes
+----------------------------------
+- Full Java NIO backend
+- RESTful API endpoints
+- Breadcrumb navigation & Sidebar shortcuts
+- Text editor modal with live save
+- Sorting & search functionality

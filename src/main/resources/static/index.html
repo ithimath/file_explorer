@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Modern File Explorer application powered by Java OOP, Spring Boot, and Java NIO">
+    <title>Java File Explorer | OOP Mini-Project</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div id="app" class="app-container">
+
+        <!-- Top Header & Menu Bar -->
+        <header class="app-header">
+            <div class="header-brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">Java File Explorer</span>
+                    <span class="brand-badge">OOP Demo</span>
+                </div>
+            </div>
+
+            <div class="header-search">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="search-input" placeholder="Search files & folders in current path..." autocomplete="off">
+                    <button id="search-clear-btn" class="search-clear-btn hidden" title="Clear search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button id="oop-concepts-btn" class="btn btn-secondary" title="View Java OOP Concepts Explanation">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>OOP Concepts</span>
+                </button>
+                <button id="theme-toggle-btn" class="btn btn-icon" title="Toggle Light/Dark Theme" aria-label="Toggle theme">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Window Area -->
+        <div class="app-body">
+
+            <!-- Left Navigation Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-heading">Quick Access</div>
+                    <nav class="sidebar-nav">
+                        <button class="nav-item active" data-path="" id="nav-home">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
+                            </span>
+                            <span class="nav-label">Workspace Home</span>
+                        </button>
+                        <button class="nav-item" data-path="Documents" id="nav-docs">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </span>
+                            <span class="nav-label">Documents</span>
+                        </button>
+                        <button class="nav-item" data-path="Downloads" id="nav-downloads">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                            </span>
+                            <span class="nav-label">Downloads</span>
+                        </button>
+                        <button class="nav-item" data-path="SourceCode" id="nav-source">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="16 18 22 12 16 6"></polyline>
+                                    <polyline points="8 6 2 12 8 18"></polyline>
+                                </svg>
+                            </span>
+                            <span class="nav-label">Source Code</span>
+                        </button>
+                        <button class="nav-item" data-path="Notes" id="nav-notes">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </span>
+                            <span class="nav-label">Notes & Docs</span>
+                        </button>
+                    </nav>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-heading">Workspace Info</div>
+                    <div class="workspace-meta-box">
+                        <div class="meta-row">
+                            <span class="meta-label">Total Items:</span>
+                            <span id="stat-total-items" class="meta-value">0</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">Folders:</span>
+                            <span id="stat-folders" class="meta-value">0</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">Files:</span>
+                            <span id="stat-files" class="meta-value">0</span>
+                        </div>
+                        <div class="meta-divider"></div>
+                        <div class="meta-security-badge" title="Guarded by Java NIO path traversal validation">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <span>Sandbox Protected</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main-content">
+
+                <!-- Navigation & Action Ribbon -->
+                <div class="explorer-toolbar">
+                    <div class="nav-buttons">
+                        <button id="btn-back" class="toolbar-btn" title="Back" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                        </button>
+                        <button id="btn-forward" class="toolbar-btn" title="Forward" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                        <button id="btn-up" class="toolbar-btn" title="Up to Parent Folder" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="19" x2="12" y2="5"></line>
+                                <polyline points="5 12 12 5 19 12"></polyline>
+                            </svg>
+                        </button>
+                        <button id="btn-refresh" class="toolbar-btn" title="Refresh Directory">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <polyline points="1 20 1 14 7 14"></polyline>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Breadcrumbs Bar -->
+                    <div class="breadcrumbs-container" id="breadcrumbs-container">
+                        <!-- Dynamic breadcrumbs inserted here -->
+                    </div>
+
+                    <!-- Creation Actions & View Toggle -->
+                    <div class="toolbar-actions">
+                        <button id="btn-new-folder" class="btn btn-primary" title="Create New Folder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                <line x1="12" y1="11" x2="12" y2="17"></line>
+                                <line x1="9" y1="14" x2="15" y2="14"></line>
+                            </svg>
+                            <span>New Folder</span>
+                        </button>
+                        <button id="btn-new-file" class="btn btn-secondary" title="Create New Text File">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="12" y1="18" x2="12" y2="12"></line>
+                                <line x1="9" y1="15" x2="15" y2="15"></line>
+                            </svg>
+                            <span>New File</span>
+                        </button>
+
+                        <div class="view-toggles">
+                            <button id="btn-view-grid" class="view-btn active" title="Grid View">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                </svg>
+                            </button>
+                            <button id="btn-view-list" class="view-btn" title="List View">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sort & Filter Bar -->
+                <div class="sort-bar">
+                    <span class="sort-label">Sort by:</span>
+                    <button class="sort-chip active" data-sort="name">
+                        <span>Name</span>
+                        <span class="sort-arrow">↑</span>
+                    </button>
+                    <button class="sort-chip" data-sort="type">
+                        <span>Type</span>
+                        <span class="sort-arrow"></span>
+                    </button>
+                    <button class="sort-chip" data-sort="size">
+                        <span>Size</span>
+                        <span class="sort-arrow"></span>
+                    </button>
+                    <button class="sort-chip" data-sort="modified">
+                        <span>Date Modified</span>
+                        <span class="sort-arrow"></span>
+                    </button>
+                    <div class="sort-spacer"></div>
+                    <span id="current-count-indicator" class="count-indicator">Loading...</span>
+                </div>
+
+                <!-- File Items Display Area -->
+                <div class="explorer-viewport">
+                    <div id="file-grid" class="file-grid-view">
+                        <!-- Dynamic Cards or Rows inserted here -->
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="empty-state" class="empty-state hidden">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="empty-title">This folder is empty</h3>
+                        <p class="empty-desc">Create a new folder or file to get started.</p>
+                        <div class="empty-actions">
+                            <button class="btn btn-primary" onclick="app.openNewFolderModal()">Create Folder</button>
+                            <button class="btn btn-secondary" onclick="app.openNewFileModal()">Create File</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Bar -->
+                <footer class="app-statusbar">
+                    <div class="status-left">
+                        <span id="status-selection">Ready</span>
+                    </div>
+                    <div class="status-right">
+                        <span class="status-badge">Java NIO 17</span>
+                        <span class="status-badge">Spring Boot 3</span>
+                    </div>
+                </footer>
+            </main>
+
+            <!-- File Details Drawer Panel -->
+            <aside id="details-panel" class="details-panel hidden">
+                <div class="details-header">
+                    <h3>Item Details</h3>
+                    <button id="btn-close-details" class="close-btn" title="Close Details">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="details-body">
+                    <div class="details-big-icon" id="detail-icon"></div>
+                    <h4 class="details-name" id="detail-name">-</h4>
+                    <p class="details-type" id="detail-type">-</p>
+
+                    <div class="details-meta-list">
+                        <div class="details-meta-item">
+                            <span class="label">Relative Path:</span>
+                            <span class="value" id="detail-path">-</span>
+                        </div>
+                        <div class="details-meta-item">
+                            <span class="label">Size / Items:</span>
+                            <span class="value" id="detail-size">-</span>
+                        </div>
+                        <div class="details-meta-item">
+                            <span class="label">Last Modified:</span>
+                            <span class="value" id="detail-modified">-</span>
+                        </div>
+                        <div class="details-meta-item">
+                            <span class="label">Permissions:</span>
+                            <span class="value" id="detail-permissions">-</span>
+                        </div>
+                        <div class="details-meta-item">
+                            <span class="label">OOP Class:</span>
+                            <span class="value code-tag" id="detail-oop-class">-</span>
+                        </div>
+                    </div>
+
+                    <div class="details-actions">
+                        <button id="detail-btn-preview" class="btn btn-primary btn-block">Preview / Edit</button>
+                        <button id="detail-btn-rename" class="btn btn-secondary btn-block">Rename</button>
+                        <button id="detail-btn-delete" class="btn btn-danger btn-block">Delete</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Right-click Custom Context Menu -->
+        <div id="context-menu" class="context-menu hidden">
+            <button class="ctx-item" id="ctx-open">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>Open / Preview</span>
+            </button>
+            <button class="ctx-item" id="ctx-details">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span>Details</span>
+            </button>
+            <div class="ctx-divider"></div>
+            <button class="ctx-item" id="ctx-rename">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                <span>Rename</span>
+            </button>
+            <button class="ctx-item ctx-danger" id="ctx-delete">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                <span>Delete</span>
+            </button>
+        </div>
+
+        <!-- Modals -->
+
+        <!-- 1. Text File Previewer & Editor Modal -->
+        <div id="preview-modal" class="modal-backdrop hidden">
+            <div class="modal-window modal-lg">
+                <div class="modal-header">
+                    <div class="modal-title-group">
+                        <span class="modal-icon">📄</span>
+                        <div>
+                            <h3 id="preview-title">File Preview</h3>
+                            <span id="preview-subtitle" class="modal-subtitle">0 lines | 0 bytes</span>
+                        </div>
+                    </div>
+                    <div class="modal-header-actions">
+                        <button id="preview-edit-toggle" class="btn btn-secondary btn-sm">Edit File</button>
+                        <button id="preview-save-btn" class="btn btn-primary btn-sm hidden">Save Changes</button>
+                        <button class="close-btn" onclick="app.closeModal('preview-modal')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body editor-body">
+                    <div class="editor-container">
+                        <pre id="preview-content-display" class="editor-pre"><code></code></pre>
+                        <textarea id="preview-content-editor" class="editor-textarea hidden" spellcheck="false"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span id="preview-path-info" class="text-muted">Path: /</span>
+                    <button class="btn btn-secondary" onclick="app.closeModal('preview-modal')">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Create Folder Modal -->
+        <div id="new-folder-modal" class="modal-backdrop hidden">
+            <div class="modal-window modal-sm">
+                <div class="modal-header">
+                    <h3>Create New Folder</h3>
+                    <button class="close-btn" onclick="app.closeModal('new-folder-modal')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <form id="new-folder-form">
+                    <div class="modal-body">
+                        <label for="folder-name-input" class="form-label">Folder Name:</label>
+                        <input type="text" id="folder-name-input" class="form-input" placeholder="e.g. Assignments" required autofocus>
+                        <p class="form-hint">Must not contain special characters (\ / : * ? " &lt; &gt; |)</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="app.closeModal('new-folder-modal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Folder</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 3. Create Text File Modal -->
+        <div id="new-file-modal" class="modal-backdrop hidden">
+            <div class="modal-window">
+                <div class="modal-header">
+                    <h3>Create New Text File</h3>
+                    <button class="close-btn" onclick="app.closeModal('new-file-modal')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <form id="new-file-form">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="file-name-input" class="form-label">File Name (with extension):</label>
+                            <input type="text" id="file-name-input" class="form-input" placeholder="e.g. notes.txt, demo.java" required autofocus>
+                        </div>
+                        <div class="form-group">
+                            <label for="file-content-input" class="form-label">Initial Content (optional):</label>
+                            <textarea id="file-content-input" class="form-input form-textarea" rows="5" placeholder="Enter text content here..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="app.closeModal('new-file-modal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create File</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 4. Rename Item Modal -->
+        <div id="rename-modal" class="modal-backdrop hidden">
+            <div class="modal-window modal-sm">
+                <div class="modal-header">
+                    <h3>Rename Item</h3>
+                    <button class="close-btn" onclick="app.closeModal('rename-modal')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <form id="rename-form">
+                    <div class="modal-body">
+                        <input type="hidden" id="rename-target-path">
+                        <label for="rename-input" class="form-label">New Name:</label>
+                        <input type="text" id="rename-input" class="form-input" required autofocus>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="app.closeModal('rename-modal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Rename</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 5. Delete Confirmation Modal -->
+        <div id="delete-modal" class="modal-backdrop hidden">
+            <div class="modal-window modal-sm">
+                <div class="modal-header modal-header-danger">
+                    <div class="danger-header-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                    <h3>Confirm Deletion</h3>
+                    <button class="close-btn" onclick="app.closeModal('delete-modal')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to permanently delete <strong id="delete-item-name">this item</strong>?</p>
+                    <p class="text-danger-sub">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeModal('delete-modal')">Cancel</button>
+                    <button type="button" id="confirm-delete-btn" class="btn btn-danger">Delete Permanently</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. OOP Concepts College Presentation Modal -->
+        <div id="oop-modal" class="modal-backdrop hidden">
+            <div class="modal-window modal-lg">
+                <div class="modal-header">
+                    <div class="modal-title-group">
+                        <span class="modal-icon">🎓</span>
+                        <div>
+                            <h3>Java OOP Concepts Demonstration</h3>
+                            <span class="modal-subtitle">Directly mapped to this File Explorer codebase</span>
+                        </div>
+                    </div>
+                    <button class="close-btn" onclick="app.closeModal('oop-modal')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <div class="modal-body oop-body">
+                    <div class="oop-tabs">
+                        <button class="oop-tab active" data-tab="encapsulation">1. Encapsulation</button>
+                        <button class="oop-tab" data-tab="inheritance">2. Inheritance</button>
+                        <button class="oop-tab" data-tab="polymorphism">3. Polymorphism</button>
+                        <button class="oop-tab" data-tab="abstraction">4. Abstraction</button>
+                    </div>
+
+                    <div class="oop-content" id="oop-tab-encapsulation">
+                        <h4>A. Encapsulation (FileItem.java)</h4>
+                        <p class="oop-desc">Encapsulation binds data and functions together into a single unit and controls access via private fields and public getter/setter methods with validation.</p>
+                        <pre class="oop-code"><code>// FileItem.java
+public abstract class FileItem {
+    // 1. Private fields hide data from unauthorized outside tampering
+    private String name;
+    private String path;
+    private String type;
+    private long size;
+
+    // 2. Controlled access via validated setters & getters
+    public String getName() { return name; }
+
+    public void setName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("File name cannot be empty");
+        }
+        this.name = name.trim();
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="oop-content hidden" id="oop-tab-inheritance">
+                        <h4>B. Inheritance (FileDocument & FolderItem extend FileItem)</h4>
+                        <p class="oop-desc">Inheritance allows child classes to reuse common attributes (name, path, size, lastModified) from the parent class while adding their own specialized properties.</p>
+                        <pre class="oop-code"><code>// Parent Class: FileItem.java
+public abstract class FileItem { ... }
+
+// Child Class 1: FileDocument.java
+public class FileDocument extends FileItem {
+    private String extension; // Specific to documents
+    private boolean textFile;
+}
+
+// Child Class 2: FolderItem.java
+public class FolderItem extends FileItem {
+    private int childCount;   // Specific to directories
+}</code></pre>
+                    </div>
+
+                    <div class="oop-content hidden" id="oop-tab-polymorphism">
+                        <h4>C. Polymorphism (Polymorphic Method getItemType())</h4>
+                        <p class="oop-desc">Polymorphism allows the same method call to produce different behaviors based on the runtime object type.</p>
+                        <pre class="oop-code"><code>// In Parent FileItem.java
+public abstract String getItemType();
+
+// In Child 1 (FileDocument.java)
+@Override
+public String getItemType() {
+    return "File";
+}
+
+// In Child 2 (FolderItem.java)
+@Override
+public String getItemType() {
+    return "Folder";
+}
+
+// Usage in Service/Controller:
+for (FileItem item : items) {
+    // Calls the overridden method polymorphically at runtime!
+    System.out.println(item.getName() + " -> " + item.getItemType());
+}</code></pre>
+                    </div>
+
+                    <div class="oop-content hidden" id="oop-tab-abstraction">
+                        <h4>D. Abstraction (FileOperations Interface & Service)</h4>
+                        <p class="oop-desc">Abstraction hides the complex inner workings of Java NIO disk access behind a simple, high-level interface.</p>
+                        <pre class="oop-code"><code>// 1. Interface (Abstract Contract)
+public interface FileOperations {
+    List&lt;FileItem&gt; listFiles(String path);
+    FolderItem createFolder(String parentPath, String folderName);
+    FileItem renameItem(String path, String newName);
+    boolean deleteItem(String path);
+}
+
+// 2. Concrete Implementation (Java NIO Engine)
+@Service
+public class FileExplorerService implements FileOperations {
+    @Override
+    public List&lt;FileItem&gt; listFiles(String path) {
+        Path targetDir = workspaceConfig.resolveSecurePath(path);
+        // Uses java.nio.file.Files.list() internally...
+    }
+}</code></pre>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="app.closeModal('oop-modal')">Got It</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications Container -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

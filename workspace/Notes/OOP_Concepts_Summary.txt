@@ -1,0 +1,19 @@
+JAVA OOP CONCEPTS DEMONSTRATION IN THIS PROJECT
+===============================================
+
+1. ENCAPSULATION:
+   FileItem has private fields (name, path, type, size, lastModified).
+   Access is controlled strictly through getters and validated setters.
+
+2. INHERITANCE:
+   FileDocument and FolderItem extend the common parent class FileItem,
+   reusing all core attributes while adding specific traits.
+
+3. POLYMORPHISM:
+   getItemType() produces "File" when invoked on FileDocument and
+   "Folder" when invoked on FolderItem. Same method call, distinct behaviors!
+
+4. ABSTRACTION:
+   The FileOperations interface hides file system complexity behind
+   clean method declarations (listFiles, createFolder, renameItem, deleteItem).
+   FileExplorerService provides the Java NIO implementation.
